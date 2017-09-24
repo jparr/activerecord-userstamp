@@ -10,6 +10,8 @@ method is used in models that are responsible for creating, updating, or deletin
 Typically this would be the `User` model of your application. The `stampable` method is used in
 models that are subject to being created, updated, or deleted by stampers.
 
+This gem only supports Ruby 2.2 and Rails 5.0 and above.
+
 ## Forkception
 
 This is a fork of:
@@ -21,14 +23,6 @@ This is a fork of:
  - which is a fork of the original [userstamp plugin](https://github.com/delynn/userstamp) by
    [delynn](https://github.com/delynn)
 
-In addition to these, I have cherry picked ideas and changes from the following forks:
-
- - [simplificator](https://github.com/simplificator/userstamp)
- - [akm](https://github.com/akm/magic_userstamp)
- - [konvenit](https://github.com/konvenit/userstamp)
-
-Finally, this gem only supports Ruby 2.0 and above. Yes, you really should upgrade to a supported
-version of Ruby. This gem is tested only on Rails 4.2; but it should work with Rails 4+.
 
 ## Features
 ### Soft-deletes

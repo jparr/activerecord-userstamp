@@ -2,3 +2,4 @@
 *.sqlite3
 /.rdoc
 /spec/examples.txt
+Gemfile.lock
