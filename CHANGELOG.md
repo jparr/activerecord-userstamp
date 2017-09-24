@@ -1,4 +1,8 @@
  # Changelog
+ ## 4.0.0 (24-9-2017)
+  * Jeff Parr         - Support for Rails 5.0+ ONLY
+  * Jeff Parr         - Controllers take params hash
+
  ## 3.0.5 (22-8-2017)
   * Jonathan Putney   - Support Rails 5.0.
   * Joel Low          - Add additional combinations to Travis build matrix.
@@ -6,11 +10,11 @@
   * Joel Low          - Respect custom stamper definitions.
 
  ## 3.0.4 (14-7-2015)
-  * Joel Low          - Allow using ActiveRecord-Userstamp with anonymous models (e.g. some 
+  * Joel Low          - Allow using ActiveRecord-Userstamp with anonymous models (e.g. some
                         `has_and_belongs_to_many` join tables.)
- 
+
  ## 3.0.3 (14-7-2015)
-  * Joel Low          - Allow using ActiveRecord-Userstamp with generated tables (e.g. 
+  * Joel Low          - Allow using ActiveRecord-Userstamp with generated tables (e.g.
                         `has_and_belongs_to_many` join tables.)
 
  ## 3.0.2 (12-7-2015)
