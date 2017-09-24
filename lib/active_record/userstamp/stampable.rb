@@ -7,7 +7,7 @@ module ActiveRecord::Userstamp::Stampable
   included do
     # Should ActiveRecord record userstamps? Defaults to true.
     class_attribute  :record_userstamp
-    self.record_userstamp = true
+    self.record_userstamp = false
 
     class_attribute  :stamper_class_name
 
@@ -41,7 +41,7 @@ module ActiveRecord::Userstamp::Stampable
     # the gem configuration.
     def stampable(options = {})
       self.stamper_class_name = options.delete(:stamper_class_name) if options.key?(:stamper_class_name)
-
+      self.record_userstamp = true
       add_userstamp_associations(options)
     end
 
@@ -68,6 +68,8 @@ module ActiveRecord::Userstamp::Stampable
 
     # Defines the associations for Userstamp.
     def add_userstamp_associations(options)
+      return unless self.record_userstamp
+
       @stamper_initialized = true
       ActiveRecord::Userstamp::Utilities.remove_association(self, :creator)
       ActiveRecord::Userstamp::Utilities.remove_association(self, :updater)
