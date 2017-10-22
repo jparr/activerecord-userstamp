@@ -1,5 +1,7 @@
 def define_first_post
-  @first_post = Post.create!(title: 'a title')
+  @first_post = Person.with_stamper(@delynn) do
+    Post.create!(title: 'a title')
+  end
 end
 
 RSpec.configure do |config|
@@ -8,15 +10,22 @@ RSpec.configure do |config|
     Person.delete_all
     Post.delete_all
     Comment.delete_all
+
+    PolyPost.delete_all
+    PolyComment.delete_all
+
     User.reset_stamper
     Person.reset_stamper
 
     @zeus = User.create!(name: 'Zeus')
     @hera = User.create!(name: 'Hera')
-    User.stamper = @zeus.id
+    # User.stamper = @zeus.id
 
-    @delynn = Person.create!(name: 'Delynn')
-    @nicole = Person.create!(name: 'Nicole')
-    Person.stamper = @delynn.id
+    User.with_stamper(@zeus) do
+      @delynn = Person.create!(name: 'Delynn')
+      @nicole = Person.create!(name: 'Nicole')
+    end
+    # Person.stamper = @delynn.id
+
   end
 end

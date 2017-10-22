@@ -40,7 +40,13 @@ module ActiveRecord::Userstamp::Stampable
     # By default, the deleter association is not defined unless the :deleter_attribute is set in
     # the gem configuration.
     def stampable(options = {})
-      self.stamper_class_name = options.delete(:stamper_class_name) if options.key?(:stamper_class_name)
+      if options[:polymorphic]
+        model_stamper
+        self.stamper_class_name = self.name
+      else
+        self.stamper_class_name = options.delete(:stamper_class_name) if options.key?(:stamper_class_name)
+      end
+
       self.record_userstamp = true
       add_userstamp_associations(options)
     end
@@ -79,15 +85,28 @@ module ActiveRecord::Userstamp::Stampable
       return if associations.nil?
 
       config = ActiveRecord::Userstamp.config
-      klass = stamper_class.try(:name)
-      relation_options = options.reverse_merge(class_name: klass)
 
-      belongs_to :creator, relation_options.reverse_merge(foreign_key: config.creator_attribute) if
-        associations.first
-      belongs_to :updater, relation_options.reverse_merge(foreign_key: config.updater_attribute) if
-        associations.second
-      belongs_to :deleter, relation_options.reverse_merge(foreign_key: config.deleter_attribute) if
-        associations.third
+      if options[:polymorphic]
+        relation_options = options.reverse_merge(polymorphic: true)
+
+        belongs_to :creator, relation_options if
+          associations.first
+        belongs_to :updater, relation_options if
+          associations.second
+        belongs_to :deleter, relation_options if
+          associations.third
+
+      else
+        klass = stamper_class.try(:name)
+        relation_options = options.reverse_merge(class_name: klass)
+
+        belongs_to :creator, relation_options.reverse_merge(foreign_key: config.creator_attribute) if
+          associations.first
+        belongs_to :updater, relation_options.reverse_merge(foreign_key: config.updater_attribute) if
+          associations.second
+        belongs_to :deleter, relation_options.reverse_merge(foreign_key: config.deleter_attribute) if
+          associations.third
+      end
     end
   end
 

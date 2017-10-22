@@ -12,6 +12,7 @@ module ActiveRecord::Userstamp::Configuration
   def self.default_stamper=(stamper)
     ActiveRecord::Base.stamper_class_name = stamper
   end
+
   self.default_stamper = 'User'.freeze
 
   # @!attribute [r] default_stamper_class
