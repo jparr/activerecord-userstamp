@@ -4,7 +4,19 @@
 module ActiveRecord::Userstamp::Stampable
   extend ActiveSupport::Concern
 
+  module BuilderExtension
+    def self.build(model, reflection)
+      model.send(:add_userstamp_association_callbacks, reflection)
+    end
+
+    def self.valid_options
+      [ :touch_updater ]
+    end
+  end
+
   included do
+    ActiveRecord::Associations::Builder::Association.extensions << BuilderExtension
+
     # Should ActiveRecord record userstamps? Defaults to true.
     class_attribute  :record_userstamp
     self.record_userstamp = false
@@ -108,6 +120,20 @@ module ActiveRecord::Userstamp::Stampable
           associations.third
       end
     end
+
+    def add_userstamp_association_callbacks(reflection)
+      if touch = reflection.options[:touch_updater]
+        callback = lambda { |changes_method| lambda { |record|
+          association_class = reflection.class_name.constantize
+          association_class.with_stamper(self.class.stamper) do
+            ActiveRecord::Associations::Builder::BelongsTo.touch_record(record, record.send(changes_method), reflection.foreign_key, reflection.name, touch, :touch_userstamp)
+          end
+        }}
+
+        self.after_save callback.(:saved_changes), if: :saved_changes?
+        self.after_destroy callback.(:changes_to_save)
+      end
+    end
   end
 
   private
@@ -144,5 +170,9 @@ module ActiveRecord::Userstamp::Stampable
 
     ActiveRecord::Userstamp::Utilities.assign_stamper(self, deleter_association)
     save
+  end
+
+  def touch_userstamp(*args)
+    update(updater: self.class.stamper)
   end
 end

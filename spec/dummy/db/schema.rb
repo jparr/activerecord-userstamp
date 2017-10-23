@@ -65,4 +65,19 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :deleter_type,   :string
     t.column :deleted_at,     :datetime
   end
+
+  # Comments are created and updated by People or Bots
+  create_table :poly_comments, :force => true do |t|
+    t.column :poly_post_id,        :integer
+    t.column :comment,        :string
+    t.column :creator_id,     :integer
+    t.column :creator_type,   :string
+    t.column :created_on,     :datetime
+    t.column :updater_id,     :integer
+    t.column :updater_type,   :string
+    t.column :updated_at,     :datetime
+    t.column :deleter_id,     :integer
+    t.column :deleter_type,   :string
+    t.column :deleted_at,     :datetime
+  end
 end
