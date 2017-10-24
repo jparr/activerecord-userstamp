@@ -122,16 +122,12 @@ module ActiveRecord::Userstamp::Stampable
     end
 
     def add_userstamp_association_callbacks(reflection)
-      if touch = reflection.options[:touch_updater]
-        callback = lambda { |changes_method| lambda { |record|
-          association_class = reflection.class_name.constantize
-          association_class.with_stamper(self.class.stamper) do
-            ActiveRecord::Associations::Builder::BelongsTo.touch_record(record, record.send(changes_method), reflection.foreign_key, reflection.name, touch, :touch_userstamp)
-          end
-        }}
+      if reflection.options[:touch_updater]
 
-        self.after_save callback.(:saved_changes), if: :saved_changes?
-        self.after_destroy callback.(:changes_to_save)
+        callback = lambda { touch_record(reflection) }
+
+        self.after_save callback, if: :changed?
+        self.after_destroy callback
       end
     end
   end
@@ -172,7 +168,26 @@ module ActiveRecord::Userstamp::Stampable
     save
   end
 
-  def touch_userstamp(*args)
-    update(updater: self.class.stamper)
+  def touch_record(reflection)
+    old_foreign_id = changed_attributes[reflection.foreign_key]
+
+    if old_foreign_id
+      if reflection.polymorphic?
+        klass = public_send("#{reflection.foreign_type}_was").constantize
+      else
+        klass = reflection.klass
+      end
+      old_record = klass.find_by(klass.primary_key => old_foreign_id)
+
+      if old_record
+        old_record.update(updater: self.class.stamper)
+      end
+    end
+
+    record = send(reflection.name)
+    if record && record.persisted?
+      record.update(updater: self.class.stamper)
+    end
   end
 end
+
