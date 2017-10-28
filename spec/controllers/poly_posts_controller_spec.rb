@@ -32,7 +32,7 @@ RSpec.describe PolyPostsController, type: :controller do
 
   context 'when updating a Post' do
     let!(:first_post) do
-      PolyPost.with_stamper(@delynn) do
+      ActiveRecord::Userstamp::PolyStamper.with_stamper(@delynn) do
         PolyPost.create!(title: 'a title')
       end
     end
@@ -49,7 +49,7 @@ RSpec.describe PolyPostsController, type: :controller do
 
   context 'when handling multiple requests' do
     let!(:first_post) do
-      PolyPost.with_stamper(@delynn) do
+      ActiveRecord::Userstamp::PolyStamper.with_stamper(@delynn) do
         PolyPost.create!(title: 'a title')
       end
     end

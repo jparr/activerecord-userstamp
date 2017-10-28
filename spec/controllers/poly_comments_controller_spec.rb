@@ -26,7 +26,7 @@ RSpec.describe PolyCommentsController, type: :controller do
   describe 'updating a Comment' do
     let!(:first_post) { PolyPost.create(title: 'First Post', creator: @zeus, updated_at: 1.day.ago) }
     let!(:comment) do
-      PolyComment.with_stamper(@delynn) do
+      ActiveRecord::Userstamp::PolyStamper.with_stamper(@delynn) do
         PolyComment.create!(comment: 'a title', poly_post_id: first_post.id)
       end
     end
@@ -47,7 +47,7 @@ RSpec.describe PolyCommentsController, type: :controller do
   context 'when handling multiple requests' do
     let!(:first_post) { PolyPost.create(title: 'First Post', creator: @zeus, updated_at: 1.day.ago) }
     let!(:comment) do
-      PolyComment.with_stamper(@delynn) do
+      ActiveRecord::Userstamp::PolyStamper.with_stamper(@delynn) do
         PolyComment.create!(comment: 'a title', poly_post_id: first_post.id)
       end
     end

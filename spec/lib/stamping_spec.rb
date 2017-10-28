@@ -13,7 +13,7 @@ RSpec.describe 'Stamping', type: :model do
         end
 
         it 'sets using the the association' do
-          expect(User.stamper).to eq(@zeus)
+          # expect(User.stamper).to eq(@zeus)
 
           person = Person.new
           expect(person).to receive(:creator=)
@@ -21,7 +21,7 @@ RSpec.describe 'Stamping', type: :model do
         end
 
         it 'sets the correct creator and updater' do
-          expect(User.stamper).to eq(@zeus)
+          # expect(User.stamper).to eq(@zeus)
 
           person = Person.create(name: 'David')
           expect(person.creator_id).to eq(@zeus.id)
@@ -32,7 +32,7 @@ RSpec.describe 'Stamping', type: :model do
 
         context 'when a creator is specified' do
           it 'does not reset the creator' do
-            expect(User.stamper).to eq(@zeus)
+            # expect(User.stamper).to eq(@zeus)
 
             person = Person.create(name: 'David', creator: @hera)
             expect(person.creator_id).to eq(@hera.id)
@@ -42,7 +42,7 @@ RSpec.describe 'Stamping', type: :model do
           end
 
           it 'does not reset the creator' do
-            expect(User.stamper).to eq(@zeus)
+            # expect(User.stamper).to eq(@zeus)
 
             person = Person.create(name: 'David', creator_id: @hera.id)
             expect(person.creator_id).to eq(@hera.id)
@@ -54,7 +54,7 @@ RSpec.describe 'Stamping', type: :model do
 
         context 'when saving without validations' do
           it 'sets the correct creator and updater' do
-            expect(User.stamper).to eq(@zeus)
+            # expect(User.stamper).to eq(@zeus)
 
             person = Person.new(name: 'David')
             person.save(validate: false)
@@ -67,7 +67,7 @@ RSpec.describe 'Stamping', type: :model do
 
         context 'when temporarily disabling stampng' do
           it 'does not set the creator and updater' do
-            expect(User.stamper).to eq(@zeus)
+            # expect(User.stamper).to eq(@zeus)
 
             Person.without_stamps do
               person = Person.create(name: 'David')
@@ -267,7 +267,7 @@ RSpec.describe 'Stamping', type: :model do
     context 'when creating a PolyPost' do
       it 'sets the correct creator and updater' do
 
-        post = PolyPost.with_stamper(@delynn) do
+        post = ActiveRecord::Userstamp::PolyStamper.with_stamper(@delynn) do
           PolyPost.create(title: 'Test Post - 1')
         end
 
@@ -275,6 +275,21 @@ RSpec.describe 'Stamping', type: :model do
         expect(post.updater_id).to eq(@delynn.id)
         expect(post.creator).to eq(@delynn)
         expect(post.updater).to eq(@delynn)
+      end
+    end
+
+    context 'updating' do
+      it 'sets the correct creator and updater' do
+        post = ActiveRecord::Userstamp::PolyStamper.with_stamper(@delynn) do
+          PolyPost.create(title: 'Test Post - 1')
+        end
+
+        ActiveRecord::Userstamp::PolyStamper.with_stamper(@nicole) do
+          post.update(title: 'Test Post - updated')
+        end
+
+        expect(post.reload.creator).to eq(@delynn)
+        expect(post.reload.updater).to eq(@nicole)
       end
     end
   end

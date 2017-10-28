@@ -17,7 +17,8 @@ module ActiveRecord::Userstamp::Stampable
   included do
     ActiveRecord::Associations::Builder::Association.extensions << BuilderExtension
 
-    # Should ActiveRecord record userstamps? Defaults to true.
+    # Should ActiveRecord record userstamps? Defaults to false.
+    # todo: could probably remove
     class_attribute  :record_userstamp
     self.record_userstamp = false
 
@@ -53,8 +54,8 @@ module ActiveRecord::Userstamp::Stampable
     # the gem configuration.
     def stampable(options = {})
       if options[:polymorphic]
-        model_stamper
-        self.stamper_class_name = self.name
+        # model_stamper
+        self.stamper_class_name = 'ActiveRecord::Userstamp::PolyStamper'
       else
         self.stamper_class_name = options.delete(:stamper_class_name) if options.key?(:stamper_class_name)
       end
@@ -153,7 +154,7 @@ module ActiveRecord::Userstamp::Stampable
 
     updater_association = self.class.reflect_on_association(:updater)
     return unless updater_association
-    return if !new_record? && !changed?
+    return unless changed?
 
     ActiveRecord::Userstamp::Utilities.assign_stamper(self, updater_association)
   end
@@ -180,13 +181,13 @@ module ActiveRecord::Userstamp::Stampable
       old_record = klass.find_by(klass.primary_key => old_foreign_id)
 
       if old_record
-        old_record.update(updater: self.class.stamper)
+        old_record.update(updater: self.class.stamper_class.stamper)
       end
     end
 
     record = send(reflection.name)
     if record && record.persisted?
-      record.update(updater: self.class.stamper)
+      record.update(updater: self.class.stamper_class.stamper)
     end
   end
 end

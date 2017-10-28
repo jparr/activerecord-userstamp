@@ -16,6 +16,7 @@ RSpec.configure do |config|
 
     User.reset_stamper
     Person.reset_stamper
+    ActiveRecord::Userstamp::PolyStamper.reset_stamper
 
     @zeus = User.create!(name: 'Zeus')
     @hera = User.create!(name: 'Hera')

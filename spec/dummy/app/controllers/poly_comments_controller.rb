@@ -25,11 +25,11 @@ class PolyCommentsController < ApplicationController
   end
 
   def set_stamper
-    PolyComment.stamper = current_user
+    ActiveRecord::Userstamp::PolyStamper.stamper = current_user
   end
 
   def reset_stamper
-    PolyComment.reset_stamper
+    ActiveRecord::Userstamp::PolyStamper.reset_stamper
   end
 
   private
