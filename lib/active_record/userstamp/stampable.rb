@@ -170,6 +170,7 @@ module ActiveRecord::Userstamp::Stampable
   end
 
   def touch_record(reflection)
+    return unless has_stamper?
     old_foreign_id = changed_attributes[reflection.foreign_key]
 
     if old_foreign_id
