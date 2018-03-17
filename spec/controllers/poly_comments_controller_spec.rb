@@ -32,15 +32,28 @@ RSpec.describe PolyCommentsController, type: :controller do
     end
 
     it 'sets the correct updater' do
-      request.session  = { person_id: @delynn.id }
-      post :update, params: {id: comment.id, poly_comment: { comment: 'Different' }}
+      request.session  = { user_id: @hera.id }
+      post :update, params: {id: comment.id, poly_comment: {comment: 'Different'}}
 
       expect(response.status).to eq(200)
       expect(controller.instance_variable_get(:@comment).comment).to eq('Different')
-      expect(controller.instance_variable_get(:@comment).updater).to eq(@delynn)
+      expect(controller.instance_variable_get(:@comment).updater).to eq(@hera)
 
       expect(first_post.reload.updated_at).to be_within(5.seconds).of(Time.current)
-      expect(first_post.updater).to eq(@delynn)
+      expect(first_post.updater).to eq(@hera)
+    end
+
+    context 'when changing the reflection' do
+      let!(:second_post) { PolyPost.create(title: 'Second Post', creator: @zeus, updated_at: 1.day.ago) }
+
+      it 'correctly updates the old post' do
+        request.session  = { user_id: @hera.id }
+        post :update, params: {id: comment.id, poly_comment: { poly_post_id: second_post.id}}
+
+        expect(first_post.reload.updated_at).to be_within(5.seconds).of(Time.current)
+        expect(first_post.updater).to eq(@hera)
+        expect(second_post.reload.updater).to eq(@hera)
+      end
     end
   end
 

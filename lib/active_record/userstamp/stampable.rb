@@ -127,7 +127,11 @@ module ActiveRecord::Userstamp::Stampable
 
         callback = lambda { touch_record(reflection) }
 
-        self.after_save callback, if: :changed?
+        if instance_methods.include?(:changes_to_save) # Rails 5.1
+          self.after_save callback, if: :saved_changes?
+        else
+          self.after_save callback, if: :changed?
+        end
         self.after_destroy callback
       end
     end
@@ -171,7 +175,12 @@ module ActiveRecord::Userstamp::Stampable
 
   def touch_record(reflection)
     return unless has_stamper?
-    old_foreign_id = changed_attributes[reflection.foreign_key]
+
+    old_foreign_id = if respond_to?(:changes_to_save)
+      saved_changes.transform_values(&:first)[reflection.foreign_key]
+    else
+      changed_attributes[reflection.foreign_key]
+    end
 
     if old_foreign_id
       if reflection.polymorphic?

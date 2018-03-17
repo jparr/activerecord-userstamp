@@ -38,12 +38,12 @@ RSpec.describe PolyPostsController, type: :controller do
     end
 
     it 'sets the correct updater' do
-      request.session  = { person_id: @delynn.id }
+      request.session  = { user_id: @hera.id }
       post :update, params: {id: first_post.id, poly_post: { title: 'Different' }}
 
       expect(response.status).to eq(200)
       expect(controller.instance_variable_get(:@post).title).to eq('Different')
-      expect(controller.instance_variable_get(:@post).updater).to eq(@delynn)
+      expect(controller.instance_variable_get(:@post).updater).to eq(@hera)
     end
   end
 
