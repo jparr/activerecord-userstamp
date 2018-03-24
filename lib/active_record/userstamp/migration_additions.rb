@@ -12,3 +12,7 @@ end
 ActiveRecord::ConnectionAdapters::TableDefinition.class_eval do
   include ActiveRecord::Userstamp::MigrationHelper
 end
+
+ActiveRecord::ConnectionAdapters::Table.class_eval do
+  include ActiveRecord::Userstamp::MigrationHelper
+end
