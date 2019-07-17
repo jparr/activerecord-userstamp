@@ -23,7 +23,10 @@ module Dummy
     # and is deprecated in Rail 5.
     if ActiveRecord.version == Gem::Version.new('4.2.x')
       config.active_record.raise_in_transactional_callbacks = true
+    elsif ActiveRecord.version >= Gem::Version.new('5.2.x')
+      config.active_record.sqlite3.represent_boolean_as_integer = true
     end
+
 
     config.after_initialize do
       require_relative '../db/schema'
